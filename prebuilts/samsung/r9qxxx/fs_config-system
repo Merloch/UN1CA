@@ -19,6 +19,7 @@ system/lib/libremotedisplay_wfd.so 0 0 644 capabilities=0x0
 system/lib/libremotedisplayservice.so 0 0 644 capabilities=0x0
 system/lib/libsecuibc.so 0 0 644 capabilities=0x0
 system/lib/libstagefright_hdcp.so 0 0 644 capabilities=0x0
+system/lib/libstagefright\.so 0 0 644 capabilities=0x0
 system/lib/libui.so 0 0 644 capabilities=0x0
 system/lib/vendor.samsung.hardware.biometrics.face@2.0.so 0 0 644 capabilities=0x0
 system/lib/vendor.samsung.hardware.biometrics.face@3.0.so 0 0 644 capabilities=0x0
