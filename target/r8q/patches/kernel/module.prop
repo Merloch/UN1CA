@@ -1,4 +1,4 @@
 id=kernel
-name=Custom kernel support
-author=ata-kaner
-description=Adds Custom Kernel in ROM.
+name=Add Not Kernel 
+author=doubledashdot, zepheri
+description=Adds kernel with OneUI 8.0 support

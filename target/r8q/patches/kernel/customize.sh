@@ -1,15 +1,14 @@
-# [
-QUEEN_REPO="https://github.com/koyunkirpan/bomb/releases/download/bomboclat"
+KERNEL_REPO="https://github.com/Z3phery/kernel_samsung_r8q/releases/latest/download"
 
-REPLACE_KERNEL_BINARIES()
-{
-    [ -f "$WORK_DIR/kernel/boot.img" ] && rm -rf "$WORK_DIR/kernel/boot.img"
-    [ -f "$WORK_DIR/kernel/dtbo.img" ] && rm -rf "$WORK_DIR/kernel/dtbo.img"
-    echo "Downloading boot.img"
-    curl -L -s -o "$WORK_DIR/kernel/boot.img" "$QUEEN_REPO/boot.img"
-    echo "Downloading dtbo.img"
-    curl -L -s -o "$WORK_DIR/kernel/dtbo.img" "$QUEEN_REPO/dtbo.img"
-}
-# ]
+LOG_STEP_IN "- Downloading Not kernel"
+if [ -f "$WORK_DIR/kernel/boot.img" ]; then
+    rm -f "$WORK_DIR/kernel/boot.img"
+fi
+if [ -f "$WORK_DIR/kernel/dtbo.img" ]; then
+    rm -f "$WORK_DIR/kernel/dtbo.img"
+fi
 
-REPLACE_KERNEL_BINARIES
+DOWNLOAD_FILE "$KERNEL_REPO/boot.img" "$WORK_DIR/kernel/boot.img"
+DOWNLOAD_FILE "$KERNEL_REPO/dtbo.img" "$WORK_DIR/kernel/dtbo.img"
+unset KERNEL_REPO
+LOG_STEP_OUT
