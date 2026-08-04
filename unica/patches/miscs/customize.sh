@@ -28,7 +28,12 @@ SMALI_PATCH "system" "system/framework/services.jar" \
     
 # Set custom Display ID prop
 STOCK_PROP="$(GET_PROP "system" "ro.build.display.id")"
-CUSTOM_PROP="UN1CA $(echo -n ${ROM_VERSION} | cut -d "-" -f1)-${ROM_CODENAME} - ${TARGET_CODENAME} [${STOCK_PROP}]"
+CLEAN_VERSION="$(echo -n "${ROM_VERSION}" | cut -d "-" -f1)"
+CLEAN_TARGET="$(echo -n "${TARGET_CODENAME}" | sed 's/^-//')"
+ROM_CODENAME="Paradigm"
+
+CUSTOM_PROP="UN1CA ${CLEAN_VERSION}-${ROM_CODENAME} - ${CLEAN_TARGET} [${STOCK_PROP}]"
+
 SET_PROP "system" "ro.build.display.id" "$CUSTOM_PROP"
 
 # Crok's RAM Managment Fix
