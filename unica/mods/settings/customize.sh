@@ -17,6 +17,12 @@ SMALI_PATCH "system" "system/framework/framework.jar" \
 
 DECODE_APK "system" "system/priv-app/SecSettings/SecSettings.apk"
 
+# Show bsoh stats
+if [[ "$TARGET_CODENAME" == "r8q" ]]; then
+    APPLY_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
+         "$SRC_DIR/unica/mods/settings/bsoh/0001-Enable-bsoh-stats.patch"
+fi
+
 # Disable stock OTA references
 if [ ! -f "$WORK_DIR/system/system/priv-app/ChoiDujour/ChoiDujour.apk" ]; then
     SMALI_PATCH "system" "system/priv-app/SecSettings/SecSettings.apk" \
