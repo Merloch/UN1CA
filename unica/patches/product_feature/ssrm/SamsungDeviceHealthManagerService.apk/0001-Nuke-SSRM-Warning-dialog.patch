@@ -1,9 +1,9 @@
-From 4f8e21a93b07d6c5e81f2a34bc901e87f2d4e5a6 Mon Sep 17 00:00:00 2001
-From: Z3phery <dz.ignacioaguilar@gmail.com>
-Date: Sat, 1 Aug 2026 03:09:42 -0400
-Subject: [PATCH] Disabled SSRM Warning dialog
+From 9fc7b1722b50c7acc0c64a0483c8e46d2d548cb7 Mon Sep 17 00:00:00 2001
+From: Ruchit <risenid@duck.com>
+Date: Sat, 11 Oct 2025 15:39:03 +0800
+Subject: [PATCH] Nuke SSRM Warning dialog
 
-Signed-off-by: Z3phery <dz.ignacioaguilar@gmail.com>
+Signed-off-by: Samuel Pascua <pascua.samuel.14@gmail.com>
 ---
  smali/U1/T.smali | 49 +-----------------------------------------------
  1 file changed, 1 insertion(+), 48 deletions(-)
