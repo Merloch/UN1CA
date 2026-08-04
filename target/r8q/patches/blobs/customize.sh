@@ -108,6 +108,16 @@ ADD_TO_WORK_DIR "r9qxxx" "vendor" "lib64/libVendorSemDataProps.so" 0 0 644 "u:ob
 ADD_TO_WORK_DIR "r9qxxx" "vendor" "lib64/libVendorSemTelephonyProps.so" 0 0 644 "u:object_r:vendor_file:s0"
 LOG_STEP_OUT
 
+LOG_STEP_IN "- Adding a73xqxx MIDAS"
+DELETE_FROM_WORK_DIR "vendor" "etc/midas"
+ADD_TO_WORK_DIR "a73xqxx" "vendor" "etc/midas"
+LOG_STEP_OUT
+
+LOG_STEP_IN "- Fixing MIDAS model detection"
+EVAL "sed -i \"s/a73xq/r8q/g\" \"$WORK_DIR/vendor/etc/midas/midas_config.json\""
+EVAL "sed -i \"s/ro.product.device/ro.product.vendor.device/g\" \"$WORK_DIR/vendor/etc/midas/midas_config.json\""
+LOG_STEP_OUT
+
 # Beginning of Product
 LOG_STEP_IN "- Adding OK Google Hotword Enrollment blobs"
 DELETE_FROM_WORK_DIR "product" "priv-app/HotwordEnrollmentOKGoogleEx4HEXAGON"
