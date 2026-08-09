@@ -60,7 +60,7 @@ BACKPORT_SF_PROPS()
         fi
 
         PROP="ro.surface_flinger.game_default_frame_rate_override"
-        VALUE="60"
+        VALUE="120"
         if [ ! "$(GET_PROP "vendor" "$PROP")" ]; then
             LOG "- Adding \"$PROP\" prop with \"$VALUE\" in ${FILE//$WORK_DIR/}"
             EVAL "sed -i \"/debug.sf.show_refresh_rate_overlay_render_rate/a $PROP=$VALUE\" \"$FILE\""
