@@ -1,16 +1,6 @@
 # shellcheck disable=SC2034
 SKIPUNZIP=1
 
-if [ ! "$(GET_PROP "system" "ro.unica.version")" ]; then
-    SET_PROP "system" "ro.unica.version" "$ROM_VERSION"
-fi
-if [ ! "$(GET_PROP "system" "ro.unica.timestamp")" ]; then
-    SET_PROP "system" "ro.unica.timestamp" "$ROM_BUILD_TIMESTAMP"
-fi
-if [ ! "$(GET_PROP "system" "ro.unica.device")" ]; then
-    SET_PROP "system" "ro.unica.device" "$TARGET_CODENAME"
-fi
-
 ADD_TO_WORK_DIR "$MODPATH" "system" "." 0 0 755 "u:object_r:system_file:s0"
 
 DECODE_APK "system" "system/priv-app/ChoiDujour/ChoiDujour.apk"
