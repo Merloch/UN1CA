@@ -18,6 +18,7 @@
 /vendor/lib64/librilutils\.so u:object_r:vendor_file:s0
 /vendor/lib64/libsec-ril\.so u:object_r:vendor_file:s0
 /vendor/lib64/libsec_semRil\.so u:object_r:vendor_file:s0
+/vendor/lib64/X12QS_libTsAe\.so u:object_r:vendor_file:s0
 /vendor/lib64/libsecril-client\.so u:object_r:vendor_file:s0
 /vendor/lib64/libsemnativecarrierfeature\.so u:object_r:vendor_file:s0
 /vendor/lib64/libVendorSemDataProps\.so u:object_r:vendor_file:s0

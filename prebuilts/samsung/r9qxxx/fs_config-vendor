@@ -18,6 +18,7 @@ vendor/lib64/libril_sem.so 0 0 644 capabilities=0x0
 vendor/lib64/librilutils.so 0 0 644 capabilities=0x0
 vendor/lib64/libsec-ril.so 0 0 644 capabilities=0x0
 vendor/lib64/libsec_semRil.so 0 0 644 capabilities=0x0
+/vendor/lib64/X12QS_libTsAe\.so 0 0 644 capabilities=0x0
 vendor/lib64/libsecril-client.so 0 0 644 capabilities=0x0
 vendor/lib64/libsemnativecarrierfeature.so 0 0 644 capabilities=0x0
 vendor/lib64/libVendorSemDataProps.so 0 0 644 capabilities=0x0
