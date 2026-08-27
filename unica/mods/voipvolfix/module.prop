@@ -1,0 +1,6 @@
+id=voipvolfix
+name=VoIP Call Volume Fix
+version=v1
+versionCode=1
+author=Merloch
+description=Fixes OneUI 8 VoIP call speaker volume on r8q by mapping the voip volume index to the WSA amp digital gain.

@@ -1,0 +1,7 @@
+service voipvolfix /system/bin/voipvolfix.sh
+    user root
+    group root audio log
+
+
+on property:sys.boot_completed=1
+    start voipvolfix
