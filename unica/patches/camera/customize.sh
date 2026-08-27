@@ -1,6 +1,4 @@
-# shellcheck disable=SC2034
-SKIPUNZIP=1
-
+# [
 _LOG() { if $DEBUG; then LOGW "$1"; else ABORT "$1"; fi }
 
 LOG_MISSING_PATCHES()
@@ -13,6 +11,7 @@ LOG_MISSING_PATCHES()
         ABORT "${MESSAGE}. Aborting"
     fi
 }
+# ]
 
 SOURCE_FIRMWARE_PATH="$(cut -d "/" -f 1 -s <<< "$SOURCE_FIRMWARE")_$(cut -d "/" -f 2 -s <<< "$SOURCE_FIRMWARE")"
 TARGET_FIRMWARE_PATH="$(cut -d "/" -f 1 -s <<< "$TARGET_FIRMWARE")_$(cut -d "/" -f 2 -s <<< "$TARGET_FIRMWARE")"
@@ -297,8 +296,8 @@ if [[ "$SOURCE_CAMERA_CONFIG_VENDOR_LIB_INFO" == *"hybridhdr.arcsoft.v1"* ]] && 
     DELETE_FROM_WORK_DIR "system" "system/lib64/libhybridHDR_wrapper.camera.samsung.so"
     DELETE_FROM_WORK_DIR "system" "system/lib64/libhybrid_high_dynamic_range.arcsoft.so"
 fi
-if [[ "$SOURCE_CAMERA_CONFIG_VENDOR_LIB_INFO" == *"image_enhance.arcsoft.v1"* ]] || \
-        [[ "$TARGET_CAMERA_CONFIG_VENDOR_LIB_INFO" == *"image_enhance.arcsoft.v1"* ]]; then
+if [[ "$SOURCE_CAMERA_CONFIG_VENDOR_LIB_INFO" == *"image_enhance.arcsoft.v1"* ]] && \
+        [[ "$TARGET_CAMERA_CONFIG_VENDOR_LIB_INFO" != *"image_enhance.arcsoft.v1"* ]]; then
     DELETE_FROM_WORK_DIR "system" "system/lib64/libimage_enhancement.arcsoft.so"
 fi
 if [[ "$SOURCE_CAMERA_CONFIG_VENDOR_LIB_INFO" == *"pro_single_rgb.mpi.v1"* ]] && \
@@ -349,7 +348,11 @@ fi
 # Fix device model number in photo/video metadata
 while IFS= read -r f; do
     HEX_PATCH "$f" "726f2e70726f647563742e6d6f64656c00" "726f2e626f6f742e656d2e6d6f64656c00"
-done < <(grep -r -w -l "ro.product.model" "$WORK_DIR/vendor" "$WORK_DIR/system/system/lib"* | grep -E "camera|libstagefright\.so")
+done < <(grep -r -w -l "ro.product.model" "$WORK_DIR/vendor" | grep "camera")
+HEX_PATCH "$WORK_DIR/system/system/lib/libstagefright.so" \
+    "726f2e70726f647563742e6d6f64656c00" "726f2e626f6f742e656d2e6d6f64656c00"
+HEX_PATCH "$WORK_DIR/system/system/lib64/libstagefright.so" \
+    "726f2e70726f647563742e6d6f64656c00" "726f2e626f6f742e656d2e6d6f64656c00"
 
 # Fix object capture
 if [[ "$TARGET_OS_SINGLE_SYSTEM_IMAGE" == "essi" ]]; then

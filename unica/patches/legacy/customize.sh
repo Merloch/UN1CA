@@ -1,3 +1,6 @@
+# shellcheck disable=SC2034
+SKIPUNZIP=1
+
 # [
 BACKPORT_SF_PROPS()
 {
@@ -230,6 +233,28 @@ else
     DELETE_FROM_WORK_DIR "system" "system/lib64/libparam_A55_250328.so"
 fi
 
+# Support camera light sensor
+TARGET_FIRMWARE_PATH="$(cut -d "/" -f 1 -s <<< "$TARGET_FIRMWARE")_$(cut -d "/" -f 2 -s <<< "$TARGET_FIRMWARE")"
+if [ -f "$FW_DIR/$TARGET_FIRMWARE_PATH/system/system/priv-app/CameraLightSensor/CameraLightSensor.apk" ]; then
+    PATCHED=true
+    ADD_TO_WORK_DIR "$MODPATH" "system" \
+        "system/etc/permissions/privapp-permissions-com.samsung.adaptivebrightnessgo.cameralightsensor.xml" 0 0 644 "u:object_r:system_file:s0"
+    if [ -f "$FW_DIR/$TARGET_FIRMWARE_PATH/system/system/etc/ev_lux_map_config.xml" ]; then
+        ADD_TO_WORK_DIR "$TARGET_FIRMWARE" "system" \
+            "system/etc/ev_lux_map_config.xml" 0 0 644 "u:object_r:system_file:s0"
+    elif [ ! -f "$FW_DIR/$TARGET_FIRMWARE_PATH/vendor/etc/ev_lux_map_config.xml" ]; then
+        DECODE_APK "system" "system/framework/motionrecognitionservice.jar"
+        LOG "- Replacing Build.MODEL with \"$(GET_PROP "vendor" "ro.product.vendor.model")\" in /system/system/framework/motionrecognitionservice.jar/smali/com/samsung/android/gesture/ExposureToLuxMapping.smali"
+        SMALI_PATCH "system" "system/framework/motionrecognitionservice.jar" \
+            "smali/com/samsung/android/gesture/ExposureToLuxMapping.smali" "replaceall" \
+            "sget-object v0, Landroid/os/Build;->MODEL:Ljava/lang/String;" \
+            "const-string v0, \\\"$(GET_PROP "vendor" "ro.product.vendor.model")\\\"" \
+            > /dev/null
+    fi
+    ADD_TO_WORK_DIR "$MODPATH" "system" \
+        "system/priv-app/CameraLightSensor/CameraLightSensor.apk" 0 0 644 "u:object_r:system_file:s0"
+fi
+
 # Ensure KSMBD support in kernel
 # - 4.19.x and below: unsupported
 # - 5.4.x-5.10.x: backport (https://github.com/namjaejeon/ksmbd.git)
@@ -367,6 +392,42 @@ if [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ]; then
         SMALI_PATCH "system" "system/framework/services.jar" \
             "smali/com/android/server/StorageManagerService.smali" "return" \
             'isPassSupport()Z' 'false'
+    fi
+fi
+
+# Support OMX hardware video codecs (pre-API 35)
+# https://android.googlesource.com/platform/frameworks/av/+/android-16.0.0_r2/media/libstagefright/omx/OMXNodeInstance.cpp#1687
+if [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ]; then
+    if ! find "$WORK_DIR/vendor/etc" -maxdepth 1 -type f -name "media_codecs*.xml" ! -name "*performance*" -exec cat {} + | \
+            grep -q -P -z '<MediaCodec\s[^>]*name="c2\.(?!android\.|sec\.)[^"]*"(?:(?!</?MediaCodec[\s>])[\s\S])*?="video/'; then
+        PATCHED=true
+        SMALI_PATCH "system" "system/app/MotionPhoto/MotionPhoto.apk" \
+            "smali/com/samsung/android/motionphoto/utils/v2/video/VideoTranscoder.smali" "replace" \
+            'configVideoEncoderParameters(Landroid/media/MediaFormat;Lcom/samsung/android/motionphoto/utils/v2/video/VideoTranscodingTask;)V' \
+            'const p2, 0x7f420888' \
+            'const p2, 0x7f000789'
+        SMALI_PATCH "system" "system/app/MotionPhoto/MotionPhoto.apk" \
+            "smali/com/samsung/android/sum/core/filter/EncoderFilter.smali" "replace" \
+            'configCodec(Lcom/samsung/android/sum/core/message/Message;)V' \
+            'const v4, 0x7f420888' \
+            'const v4, 0x7f000789'
+        if [ -f "$WORK_DIR/system/system/priv-app/GlobalPostProcMgr/GlobalPostProcMgr.apk" ]; then
+            SMALI_PATCH "system" "system/priv-app/GlobalPostProcMgr/GlobalPostProcMgr.apk" \
+                "smali/com/samsung/android/sum/core/filter/EncoderFilter.smali" "replace" \
+                'configCodec(Lcom/samsung/android/sum/core/message/Message;)V' \
+                'const v3, 0x7f420888' \
+                'const v3, 0x7f000789'
+        fi
+        SMALI_PATCH "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" \
+            "smali_classes3/com/samsung/android/sum/core/filter/EncoderFilter.smali" "replace" \
+            'configCodec(Lcom/samsung/android/sum/core/message/Message;)V' \
+            'const v4, 0x7f420888' \
+            'const v4, 0x7f000789'
+        SMALI_PATCH "system" "system/priv-app/vexfwk_service/vexfwk_service.apk" \
+            "smali/com/samsung/android/sum/core/filter/EncoderFilter.smali" "replace" \
+            'configCodec(Lcom/samsung/android/sum/core/message/Message;)V' \
+            'const v3, 0x7f420888' \
+            'const v3, 0x7f000789'
     fi
 fi
 
