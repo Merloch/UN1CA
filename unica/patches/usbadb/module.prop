@@ -1,0 +1,4 @@
+id=usbadb
+name=ADB USB on boot
+author=Merloch
+description=Brings up the ADB USB gadget on boot so the PC detects it without toggling USB debugging.
