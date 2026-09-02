@@ -1,5 +1,13 @@
 # SEC_PRODUCT_FEATURE_SECURITY_CONFIG_ESE_CHIP_VENDOR
 # SEC_PRODUCT_FEATURE_SECURITY_CONFIG_ESE_COS_NAME
+
+# Nothing to patch if SecureElement has been removed (device has no usable eSE,
+# e.g. r8q where SecureElement only ANR-loops - see target/r8q/patches/optimize).
+if [ ! -f "$WORK_DIR/system/system/app/SecureElement/SecureElement.apk" ]; then
+    LOG "\033[0;33m! SecureElement not present. Skipping eSE patches\033[0m"
+    return 0
+fi
+
 if [[ "$SOURCE_SECURITY_CONFIG_ESE_CHIP_VENDOR" == "$TARGET_SECURITY_CONFIG_ESE_CHIP_VENDOR" ]] && \
     [[ "$SOURCE_SECURITY_CONFIG_ESE_COS_NAME" == "$TARGET_SECURITY_CONFIG_ESE_COS_NAME" ]]; then
     LOG "\033[0;33m! Nothing to do\033[0m"
