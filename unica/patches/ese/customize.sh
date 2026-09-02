@@ -1,10 +1,12 @@
 # SEC_PRODUCT_FEATURE_SECURITY_CONFIG_ESE_CHIP_VENDOR
 # SEC_PRODUCT_FEATURE_SECURITY_CONFIG_ESE_COS_NAME
 
-# Nothing to patch if SecureElement has been removed (device has no usable eSE,
-# e.g. r8q where SecureElement only ANR-loops - see target/r8q/patches/optimize).
-if [ ! -f "$WORK_DIR/system/system/app/SecureElement/SecureElement.apk" ]; then
-    LOG "\033[0;33m! SecureElement not present. Skipping eSE patches\033[0m"
+# Nothing to patch on devices with no usable eSE, where SecureElement is removed
+# (e.g. r8q, where it only ANR-loops - see unica/mods/r8q_optimize). Skipping
+# here also avoids decoding an APK that would be rebuilt after the mod deletes it.
+if [ "$TARGET_CODENAME" = "r8q" ] || \
+    [ ! -f "$WORK_DIR/system/system/app/SecureElement/SecureElement.apk" ]; then
+    LOG "\033[0;33m! No usable SecureElement. Skipping eSE patches\033[0m"
     return 0
 fi
 
