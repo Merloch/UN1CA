@@ -1,0 +1,33 @@
+# r8q performance / battery optimizations, confirmed live via ADB profiling.
+# Implemented as a mod (last apply stage) so the deletions survive the legacy
+# patch (which re-adds CameraLightSensor) and run after the eSE patch.
+if [ "$TARGET_CODENAME" != "r8q" ]; then
+    LOG "\033[0;33m! Not r8q. Skipping\033[0m"
+    return 0
+fi
+
+# 1) CameraLightSensor (com.samsung.adaptivebrightnessgo)
+#    Uses the FRONT CAMERA as a brightness sensor, opening/closing a camera
+#    session every ~5s and keeping the whole camera stack awake at idle - a
+#    constant battery drain that also produced ~half of the idle log spam.
+#    r8q has a real hardware ambient light sensor (stk_stk31610), so auto-
+#    brightness keeps working without it.
+DELETE_FROM_WORK_DIR "system" "system/priv-app/CameraLightSensor"
+DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.adaptivebrightnessgo.cameralightsensor.xml"
+
+# 2) SecureElement (com.android.se)
+#    Tries to reach an embedded Secure Element (eSE) that r8q does not have,
+#    ANR-looping every ~30-60s. NFC read/write and HCE tap-to-pay (Google
+#    Pay/Wallet) do NOT use this service and keep working; only hardware-eSE
+#    payments - already non-functional on r8q - are affected.
+DELETE_FROM_WORK_DIR "system" "system/app/SecureElement"
+
+# 3) Silence constant DEBUG/INFO log spam from the auto-brightness / sensor
+#    pipeline (and a few other chatty tags). At idle these logged ~80 lines/sec
+#    for no benefit, keeping logd busy. Only their logging is muted; the
+#    features behave identically.
+for _TAG in BrightnessHandler SecBrightnessController SehLight SSC_DAEMON \
+        sensors-hal MotionRecognitionService SemWifiTrafficPoller QuickPanelLog; do
+    SET_PROP "system" "persist.log.tag.$_TAG" "S"
+done
+unset _TAG

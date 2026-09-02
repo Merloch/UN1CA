@@ -1,4 +1,0 @@
-id=optimize
-name=r8q optimizations
-author=Merloch
-description=Removes S22-donor components that are broken or wasteful on r8q (CameraLightSensor front-camera brightness cycling, non-functional SecureElement eSE) to improve battery, fluidity and reduce log spam.

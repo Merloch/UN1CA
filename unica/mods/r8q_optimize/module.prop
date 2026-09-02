@@ -1,0 +1,6 @@
+id=r8q_optimize
+name=r8q optimizations
+version=v1
+versionCode=1
+author=Merloch
+description=Removes S22-donor components that are broken or wasteful on r8q (CameraLightSensor front-camera brightness cycling, non-functional SecureElement eSE) and silences their log spam, to improve battery, fluidity and reduce logd load. Runs as a mod so it wins over the legacy/ese patches.
