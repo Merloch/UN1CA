@@ -17,3 +17,13 @@ DELETE_FROM_WORK_DIR "system" "system/priv-app/CameraLightSensor"
 #    tap-to-pay (Google Pay / Wallet) do NOT use this service and keep working;
 #    only hardware-eSE payments - already non-functional on r8q - are affected.
 DELETE_FROM_WORK_DIR "system" "system/app/SecureElement"
+
+# 3) Silence constant DEBUG/INFO log spam from the auto-brightness / sensor
+#    pipeline (and a few other chatty tags). On a release build these logged
+#    ~80 lines/sec at idle, keeping logd busy for no benefit. Auto-brightness
+#    and the sensors are unaffected - only their verbose logging is muted.
+for _TAG in BrightnessHandler SecBrightnessController SehLight SSC_DAEMON \
+        sensors-hal MotionRecognitionService SemWifiTrafficPoller QuickPanelLog; do
+    SET_PROP "system" "persist.log.tag.$_TAG" "S"
+done
+unset _TAG
