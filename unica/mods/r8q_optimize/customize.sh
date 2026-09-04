@@ -53,3 +53,18 @@ APPLY_PATCH "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" \
 # 5) Stock r8q tunables the donor system drops (see system/etc/init/r8q_optimize.rc,
 #    shipped automatically from this mod's system/ tree): 512 kB read-ahead on
 #    the dynamic partitions and the 30% midground CPU cap.
+
+# 6) Let the AOSP cached-app freezer handle user apps.
+#    Samsung's CachedAppOptimizer asks FreecessController.freezeTargetProcess()
+#    before scheduling a freeze, and that only says yes for core uids
+#    (< 10000): user apps are reserved for Freecess, Samsung's own freezer,
+#    which needs a kernel module (KernelSupport: N here) and stays disabled.
+#    Net effect measured on r8q: system-uid apps freeze fine, user apps never
+#    do (0 of 50 after 60 s idle) and keep burning CPU in cache. Make the gate
+#    answer yes for everyone so the stock AOSP freezer - already proven to work
+#    on this kernel via cgroup.freeze - covers user apps too.
+SMALI_PATCH "system" "system/framework/services.jar" \
+    "smali/com/android/server/am/FreecessController.smali" "replace" \
+    'freezeTargetProcess(ILjava/lang/String;)Z' \
+    'const/4 p0, 0x0' \
+    'const/4 p0, 0x1'
