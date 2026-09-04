@@ -26,8 +26,22 @@ DELETE_FROM_WORK_DIR "system" "system/app/SecureElement"
 #    pipeline (and a few other chatty tags). At idle these logged ~80 lines/sec
 #    for no benefit, keeping logd busy. Only their logging is muted; the
 #    features behave identically.
+#    cutils-trace, SecVibrator, npu_user_driver, KeyguardFingerPrintSwipe and
+#    AF_DEBUG all log successful or expected operations at error level.
 for _TAG in BrightnessHandler SecBrightnessController SehLight SSC_DAEMON \
-        sensors-hal MotionRecognitionService SemWifiTrafficPoller QuickPanelLog; do
+        sensors-hal MotionRecognitionService SemWifiTrafficPoller QuickPanelLog \
+        cutils-trace SecVibrator-HAL-AIDL-CORE SecVibrator-HAL-AIDL-EXT \
+        npu_user_driver KeyguardFingerPrintSwipe AF_DEBUG; do
     SET_PROP "system" "persist.log.tag.$_TAG" "S"
 done
 unset _TAG
+
+# 4) Camera vendor keys the r8q HAL does not expose
+#    The donor (S22) camera app reads samsung.android.control.textDetectionInfo,
+#    nightModeSuggestion and nightIconState off every capture result. The r8q
+#    HAL registers none of them, so SemCaptureResult.a() threw, built a stack
+#    trace and logged 90 times a second (3 keys x 30fps) for as long as the
+#    camera was open. Patch it to remember the keys that failed. The features
+#    behind those tags cannot work on r8q either way.
+APPLY_PATCH "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" \
+    "$MODPATH/SamsungCamera.apk/0001-Cache-unsupported-vendor-keys.patch"
