@@ -45,3 +45,7 @@ unset _TAG
 #    behind those tags cannot work on r8q either way.
 APPLY_PATCH "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" \
     "$MODPATH/SamsungCamera.apk/0001-Cache-unsupported-vendor-keys.patch"
+
+# 5) Stock r8q tunables the donor system drops (see system/etc/init/r8q_optimize.rc,
+#    shipped automatically from this mod's system/ tree): 512 kB read-ahead on
+#    the dynamic partitions and the 30% midground CPU cap.

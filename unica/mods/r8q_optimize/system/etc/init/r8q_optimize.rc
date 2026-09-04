@@ -1,0 +1,15 @@
+# r8q tunables restored to the stock (Android 13) values that the donor
+# system does not carry. Applied once boot has completed so nothing later in
+# the boot sequence overwrites them.
+on property:sys.boot_completed=1
+    # init.qcom.rc on stock r8q sets 512 kB read-ahead on the dynamic
+    # partitions (erofs system/vendor/product); the donor leaves the 128 kB
+    # kernel default.
+    write /sys/block/dm-0/queue/read_ahead_kb 512
+    write /sys/block/dm-1/queue/read_ahead_kb 512
+    write /sys/block/dm-2/queue/read_ahead_kb 512
+    write /sys/block/dm-3/queue/read_ahead_kb 512
+    write /sys/block/dm-4/queue/read_ahead_kb 512
+    # Stock r8q init.rc caps midground apps at 30% CPU capacity; the S22
+    # donor init.rc caps them at 20%.
+    write /dev/cpuctl/midground/cpu.uclamp.max 30
