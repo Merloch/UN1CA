@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Merloch <47682274+Merloch@users.noreply.github.com>
+Date: Fri, 4 Sep 2026 19:30:00 -0300
+Subject: [PATCH] Cache unsupported vendor keys in requests
+
+Same treatment as SemCaptureResult for the request side:
+SemCaptureRequest.b()/d() get and set vendor keys on the builder and
+catch the exception thrown when the HAL does not expose the tag. On r8q
+initialZoomRatio, externalLensType and externalDeviceConnected are
+missing, so every session/mode change threw and logged for each. Remember
+the keys that failed and skip them.
+---
+diff --git a/smali_classes3/com/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest.smali b/smali_classes3/com/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest.smali
+index c247e3e..9a10a36 100644
+--- a/smali_classes3/com/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest.smali
++++ b/smali_classes3/com/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest.smali
+@@ -194,6 +194,8 @@
+ 
+ .field public static final z0:Landroid/hardware/camera2/CaptureRequest$Key;
+ 
++.field public static final unicaMissingKeys:Ljava/util/Set;
++
+ 
+ # direct methods
+ .method static constructor <clinit>()V
+@@ -1251,6 +1253,12 @@
+ 
+     invoke-direct {v0, v1, v2}, Landroid/hardware/camera2/CaptureRequest$Key;-><init>(Ljava/lang/String;Ljava/lang/Class;)V
+ 
++    invoke-static {}, Ljava/util/concurrent/ConcurrentHashMap;->newKeySet()Ljava/util/concurrent/ConcurrentHashMap$KeySetView;
++
++    move-result-object v0
++
++    sput-object v0, Lcom/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest;->unicaMissingKeys:Ljava/util/Set;
++
+     return-void
+ .end method
+ 
+@@ -1304,6 +1312,17 @@
+     return-object v0
+ 
+     :cond_1
++    sget-object v2, Lcom/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest;->unicaMissingKeys:Ljava/util/Set;
++
++    invoke-interface {v2, p1}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
++
++    move-result v3
++
++    if-eqz v3, :cond_unica_known_b
++
++    return-object v0
++
++    :cond_unica_known_b
+     :try_start_0
+     invoke-virtual {p0, p1}, Landroid/hardware/camera2/CaptureRequest$Builder;->get(Landroid/hardware/camera2/CaptureRequest$Key;)Ljava/lang/Object;
+ 
+@@ -1316,6 +1335,10 @@
+     :catch_0
+     move-exception p0
+ 
++    sget-object v2, Lcom/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest;->unicaMissingKeys:Ljava/util/Set;
++
++    invoke-interface {v2, p1}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
++
+     new-instance v2, Ljava/lang/StringBuilder;
+ 
+     const-string v3, "UnsupportedOperationException - "
+@@ -1437,7 +1460,7 @@
+ .end method
+ 
+ .method public static d(Landroid/hardware/camera2/CaptureRequest$Builder;Ljava/util/Set;Landroid/hardware/camera2/CaptureRequest$Key;Ljava/lang/Object;)V
+-    .locals 2
++    .locals 4
+ 
+     const-string v0, "SemCaptureRequest"
+ 
+@@ -1459,6 +1482,17 @@
+     return-void
+ 
+     :cond_1
++    sget-object v2, Lcom/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest;->unicaMissingKeys:Ljava/util/Set;
++
++    invoke-interface {v2, p2}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
++
++    move-result v3
++
++    if-eqz v3, :cond_unica_known_d
++
++    return-void
++
++    :cond_unica_known_d
+     :try_start_0
+     invoke-virtual {p0, p2, p3}, Landroid/hardware/camera2/CaptureRequest$Builder;->set(Landroid/hardware/camera2/CaptureRequest$Key;Ljava/lang/Object;)V
+ 
+@@ -1490,6 +1524,10 @@
+     :catch_0
+     move-exception p0
+ 
++    sget-object v2, Lcom/samsung/android/camera/core2/local/vendorkey/SemCaptureRequest;->unicaMissingKeys:Ljava/util/Set;
++
++    invoke-interface {v2, p2}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
++
+     new-instance p1, Ljava/lang/StringBuilder;
+ 
+     const-string p3, "UnsupportedOperationException - "
