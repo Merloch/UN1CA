@@ -442,6 +442,10 @@ if [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ]; then
             'configCodec(Lcom/samsung/android/sum/core/message/Message;)V' \
             'const v4, 0x7f420888' \
             'const v4, 0x7f000789'
+        # OMX encoders expect the "hdr10plus" parameter name for HDR10+ recording
+        # (Codec2 takes "hdr10"). From ata-kaner/UN1CA f62e6f50.
+        APPLY_PATCH "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" \
+            "$MODPATH/camera/SamsungCamera.apk/0001-Return-OMX-compatible-HDR10-parameter.patch"
         SMALI_PATCH "system" "system/priv-app/vexfwk_service/vexfwk_service.apk" \
             "smali/com/samsung/android/sum/core/filter/EncoderFilter.smali" "replace" \
             'configCodec(Lcom/samsung/android/sum/core/message/Message;)V' \
