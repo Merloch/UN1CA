@@ -118,6 +118,26 @@ EVAL "sed -i \"s/a73xq/r8q/g\" \"$WORK_DIR/vendor/etc/midas/midas_config.json\""
 EVAL "sed -i \"s/ro.product.device/ro.product.vendor.device/g\" \"$WORK_DIR/vendor/etc/midas/midas_config.json\""
 LOG_STEP_OUT
 
+# Newer Adreno userspace driver from r9qxxx (SM8350, same driver family as the
+# SM8250's Adreno 650). From ata-kaner/UN1CA a0275c21.
+LOG_STEP_IN "- Upgrading GPU blobs from r9qxxx"
+for arch in lib lib64; do
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/egl/eglSubDriverAndroid.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/egl/libEGL_adreno.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/egl/libGLESv1_CM_adreno.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/egl/libGLESv2_adreno.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/egl/libq3dtools_adreno.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/egl/libq3dtools_esx.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/hw/vulkan.adreno.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/libadreno_utils.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/libCB.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/libgsl.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/libllvm-glnext.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+    ADD_TO_WORK_DIR "r9qxxx" "vendor" "$arch/libllvm-qcom.so" 0 0 644 "u:object_r:same_process_hal_file:s0"
+done
+unset arch
+LOG_STEP_OUT
+
 # Beginning of Product
 LOG_STEP_IN "- Adding OK Google Hotword Enrollment blobs"
 DELETE_FROM_WORK_DIR "product" "priv-app/HotwordEnrollmentOKGoogleEx4HEXAGON"
