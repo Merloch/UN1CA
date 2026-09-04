@@ -51,8 +51,9 @@ APPLY_PATCH "system" "system/priv-app/SamsungCamera/SamsungCamera.apk" \
     "$MODPATH/SamsungCamera.apk/0002-Cache-unsupported-vendor-keys-in-requests.patch"
 
 # 5) Stock r8q tunables the donor system drops (see system/etc/init/r8q_optimize.rc,
-#    shipped automatically from this mod's system/ tree): 512 kB read-ahead on
-#    the dynamic partitions and the 30% midground CPU cap.
+#    shipped automatically from this mod's system/ tree): the 30% midground CPU
+#    cap. (Stock's 512 kB read-ahead is clamped back to 128 kB by this kernel,
+#    so it is deliberately not written - see the rc.)
 
 # 6) Let the AOSP cached-app freezer handle user apps.
 #    Samsung's CachedAppOptimizer asks FreecessController.freezeTargetProcess()
