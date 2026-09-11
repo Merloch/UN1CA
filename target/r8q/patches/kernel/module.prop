@@ -1,4 +1,4 @@
 id=kernel
-name=Kernel
-author=pascua28, ata-kaner
-description=UN1CA kernel as default ROM kernel.
+name=Not kernel
+author=doubledashdot, zepheri
+description=Not kernel as default ROM kernel, with KernelSU built in.
